@@ -9,4 +9,5 @@ python-dotenv>=1.0.0
 ipykernel>=6.23.3
 arxiv==1.4.8
 streamlit==1.27.*
+unstructured[md]==0.10.19
 latex2markdown

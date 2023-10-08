@@ -27,3 +27,7 @@ export OPENAI_API_KEY={Your API Key here}
 streamlit run chat_st.py --server.port 8010
 ```
 - Access the chat interface at `http://localhost:8010`
+
+## Notes
+- One can select `gpt-3.5-turbo` or `gpt-4` in the UI. Even though `gpt-4` is much more expensive, it is better at keeping track of the chat history. 
+- One also has the option to chat `with context` or `without context`, but need to refresh the streamlit app and clear the cache (press the letter `C`) when switching.
