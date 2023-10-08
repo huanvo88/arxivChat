@@ -26,4 +26,4 @@ export OPENAI_API_KEY={Your API Key here}
 ```
 streamlit run chat_st.py --server.port 8010
 ```
-Access the chat interface at `http://localhost:8010`
+- Access the chat interface at `http://localhost:8010`
