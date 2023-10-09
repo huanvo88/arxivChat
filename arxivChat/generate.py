@@ -20,6 +20,7 @@ from arxivChat.config import (
     WITH_CONTEXT,
     logger,
 )
+from arxivChat.store import add_to_vs
 from arxivChat.retrieve import create_retriever
 
 
@@ -117,6 +118,8 @@ if __name__ == "__main__":
         logger.info("Response \n")
         pprint(response)
     else:
+        logger.info("Add arxiv documents to vector store")
+        db = add_to_vs()
         logger.info(f"Answer question with context and {RETRIEVER_MODE} retriever")
         response, source_docs = generate_with_retrieval(query)
         logger.info("Response \n")

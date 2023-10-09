@@ -7,12 +7,14 @@ from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.schema.document import Document 
 
-from arxivChat.config import ARXIV_IDS, ARXIV_DIR, VS_DIR, logger
-from arxivChat.load import (download_source, 
-                      load_md_files,
-                      find_tex_files,
-                      tex_to_md
+from arxivChat.config import (ARXIV_IDS, 
+                              ARXIV_DIR, 
+                              VS_DIR,
+                              VS_DIR_URL, 
+                              URLS,
+                              logger
 )
+from arxivChat.load import load_arxiv_ids, load_urls
 from arxivChat.split import md_split
 
 
@@ -48,7 +50,8 @@ def load_vs(persist_directory: str):
 # fetch the arxiv papers and load the documents to a vector store
 def add_to_vs(arxiv_ids: List[str] = ARXIV_IDS,
               arxiv_dir: str = str(ARXIV_DIR),
-              vs_dir: str = str(VS_DIR)):
+              vs_dir: str = str(VS_DIR),
+              **kwargs):
     """Fetch the arxiv documents and put them in the vector stores
 
     Args:
@@ -59,21 +62,34 @@ def add_to_vs(arxiv_ids: List[str] = ARXIV_IDS,
                     Defaults to str(VS_DIR).
     """
 
-    logger.info("Fetch arxiv articles")
-    download_source(arxiv_ids, arxiv_dir) 
-
-    logger.info(f"Find all the .tex files")
-    tex_paths = find_tex_files(arxiv_dir)
-
-    logger.info("Convert tex to md files")
-    tex_to_md(tex_paths)
-
-    logger.info("Find all md documents")
-    documents = load_md_files(arxiv_dir)
-    logger.info(f"We have {len(documents)} markdown documents")
+    logger.info("Load the arxiv ids into documents")
+    documents = load_arxiv_ids(arxiv_ids, arxiv_dir)
 
     logger.info("Split the documents based on Markdown")
-    document_chunks = md_split(documents)
+    document_chunks = md_split(documents, **kwargs)
+
+    logger.info("Create the vector store")
+    db = create_vs(document_chunks, vs_dir)
+
+    return db 
+
+
+# fetch the urls and load to a vector store
+def add_urls_to_vs(urls: List[str] = URLS, 
+                   vs_dir: str = str(VS_DIR_URL),
+                   **kwargs):
+    """Fetch the texts from the urls and add to vector store
+
+    Args:
+        urls (List[str]): List of urls. Default is URLS
+        vs_dir (str): Directory to store the vector stores. 
+            Default is VS_DIR_URL
+    """
+    logger.info("Load the urls into documents")
+    documents = load_urls(urls)
+
+    logger.info("Split the documents based on Markdown")
+    document_chunks = md_split(documents, **kwargs)
 
     logger.info("Create the vector store")
     db = create_vs(document_chunks, vs_dir)
@@ -86,5 +102,8 @@ if __name__ == "__main__":
     _ = load_dotenv(find_dotenv())  # read local .env file
     openai.api_key = os.environ["OPENAI_API_KEY"]
 
-    logger.info("Create the vector store")
+    logger.info("Add arxiv documents to vector store")
     db = add_to_vs(ARXIV_IDS, str(ARXIV_DIR), str(VS_DIR))
+
+    logger.info("Add url documents to vector store")
+    db_url = add_urls_to_vs(URLS, str(VS_DIR_URL))

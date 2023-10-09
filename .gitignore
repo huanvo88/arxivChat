@@ -54,3 +54,4 @@ venv.bak/
 
 # vector store
 vector_store/
+vector_store_url/

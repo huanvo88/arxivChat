@@ -7,8 +7,8 @@ from langchain.memory import ConversationSummaryBufferMemory
 from langchain.chat_models import ChatOpenAI
 from langchain.chat_models import ChatOpenAI
 
-from arxivChat.config import WITH_CONTEXT
-from arxivChat.store import add_to_vs
+from arxivChat.store import add_urls_to_vs
+from arxivChat.config import VS_DIR_URL
 from arxivChat.chat import (create_chat, 
                             get_answer, 
                             process_latex_output, 
@@ -16,7 +16,7 @@ from arxivChat.chat import (create_chat,
 
 
 # title of the webpage ############################
-st.header("Chat with docs 💬 📚")
+st.header("Chat with URLs 💬 📚")
 
 
 # get openai api key #################################
@@ -24,17 +24,21 @@ _ = load_dotenv(find_dotenv())  # read local .env file
 openai.api_key = os.environ["OPENAI_API_KEY"] 
 
 
-# input a list of arxiv ids ##################
-values = st.text_input(label = "Enter a list of arXiv ids", 
-                       value = "1603.02754, 1706.09516",
-                       help = "arxiv id of the form xxxx.xxxxx, separated by commas")
-arxiv_ids = values.split(',')
-arxiv_ids = [id.strip() for id in arxiv_ids] 
+# input a list of urls ##################
+values = st.text_input(label = "Enter a list of urls, separated by commas", 
+                       value = "https://en.wikipedia.org/wiki/Economy_of_Canada, https://lilianweng.github.io/posts/2023-06-23-agent/",
+                       help = """Enter a list of urls, separated by commas, \
+                            example https://en.wikipedia.org/wiki/Economy_of_Canada, https://lilianweng.github.io/posts/2023-06-23-agent/
+                       """
+                       )
+urls = values.split(',')
+urls = [id.strip() for id in urls] 
 
 
 # add the documents to the vector store #####################
 if st.button("Add to Vector Store"):
-    add_to_vs(arxiv_ids = arxiv_ids)
+    add_urls_to_vs(urls = urls,
+                   vs_dir=str(VS_DIR_URL))
     st.write("Documents added to Vector Store")
 
 
@@ -81,6 +85,7 @@ def init_memory():
 chat_engine = create_chat(model_name = model,
                           temperature = temperature,
                           with_context = with_context,
+                          vs_dir=str(VS_DIR_URL),
                           memory=init_memory())
 history = []
 

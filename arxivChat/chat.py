@@ -24,6 +24,7 @@ from arxivChat.config import (CHAT_TEMPLATE,
                         WITH_CONTEXT, 
                         logger)
 from arxivChat.retrieve import create_retriever
+from arxivChat.store import add_to_vs
 
 
 def create_chat(
@@ -145,6 +146,9 @@ if __name__ == "__main__":
     logger.info("Extract openai key")
     _ = load_dotenv(find_dotenv())  # read local .env file
     openai.api_key = os.environ["OPENAI_API_KEY"]
+
+    logger.info("Add arxiv documents to vector store")
+    db = add_to_vs()
 
     logger.info(f"Answer with context = {WITH_CONTEXT}")
     qa_chat = create_chat(with_context=WITH_CONTEXT)

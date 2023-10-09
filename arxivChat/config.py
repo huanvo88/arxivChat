@@ -11,13 +11,21 @@ ARXIV_IDS = ["1603.02754", "1706.09516"]  # xgboost, catboost
 ARXIV_DIR = "arxiv" # directory to save the arxiv papers
 ARXIV_DIR = BASE_DIR / ARXIV_DIR
 
+# List of URLs ######################
+URLS = ["https://en.wikipedia.org/wiki/Economy_of_Canada",
+        "https://lilianweng.github.io/posts/2023-06-23-agent/"
+        ]
+
 # split document config ###########
 CHUNK_SIZE = 1000
 CHUNK_OVERLAP = 100
+SPLIT_MODE = "markdown" # "markdown" or "text"
 
 # vector store config ############
 VS_DIR = "vector_store"
 VS_DIR = BASE_DIR / VS_DIR
+VS_DIR_URL = "vector_store_url"
+VS_DIR_URL = BASE_DIR / VS_DIR_URL
 
 # retriever config #################
 RETRIEVER_MODEL = "gpt-3.5-turbo"  # "gpt-4" or "gpt-3.5-turbo", only relevant for retrieval_mode = "multiquery"

@@ -8,7 +8,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.retrievers.multi_query import MultiQueryRetriever
 
 from arxivChat.config import RETRIEVER_MODE, RETRIEVER_MODEL, RETURN_DOCS, VS_DIR, logger
-from arxivChat.store import load_vs
+from arxivChat.store import add_to_vs, load_vs
 
 
 def create_retriever(
@@ -54,6 +54,9 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     query = args.query
+
+    logger.info("Add arxiv documents to vector store")
+    db = add_to_vs()
 
     logger.info(f"Create {RETRIEVER_MODE} retriever")
     retriever = create_retriever(str(VS_DIR), mode=RETRIEVER_MODE)

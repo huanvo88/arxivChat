@@ -1,6 +1,6 @@
-# Chat with arXiv Documents
+# Chat with URLs
 
-Chat with arXiv documents using GPT models from OpenAI ("gpt-3.5-turbo" or "gpt-4")
+Chat with URLs using GPT models from OpenAI ("gpt-3.5-turbo" or "gpt-4")
 
 ## Instructions
 - First we clone the repo
@@ -31,3 +31,4 @@ streamlit run chat_st.py --server.port 8010
 ## Notes
 - One can select `gpt-3.5-turbo` or `gpt-4` in the UI. Even though `gpt-4` is much more expensive, it is better at keeping track of the chat history. 
 - One also has the option to chat `with context` or `without context`, but need to refresh the streamlit app and clear the cache (press the letter `C`) when switching.
+- To test the model, ask the question: "What is the GDP per capita of Canada in 2023?" If the model does not know the answer, augment with the url [Economy of Canada](https://en.wikipedia.org/wiki/Economy_of_Canada).

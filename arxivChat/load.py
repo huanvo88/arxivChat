@@ -3,10 +3,10 @@ import tarfile
 from typing import List 
 
 import latex2markdown
-from langchain.document_loaders import DirectoryLoader
+from langchain.document_loaders import DirectoryLoader, WebBaseLoader
 
 import arxiv
-from arxivChat.config import ARXIV_DIR, ARXIV_IDS, logger
+from arxivChat.config import ARXIV_DIR, ARXIV_IDS, URLS, logger
 
 
 def create_arxiv_filename(arxiv_id: str):
@@ -94,16 +94,46 @@ def load_md_files(directory: str):
     return documents
 
 
-if __name__ == "__main__":
-    logger.info("Fetch arxiv articles")
-    download_source(ARXIV_IDS, ARXIV_DIR)
-    
+def load_arxiv_ids(arxiv_ids: List[str] = ARXIV_IDS,
+              arxiv_dir: str = str(ARXIV_DIR)):
+    """Fetch the arxiv papers and return langchain documents
+
+    Args:
+        arxiv_ids (List[str], optional): List of arxiv ids. Defaults to ARXIV_IDS.
+        arxiv_dir (str, optional): Directory to save the arxiv papers. 
+                        Defaults to str(ARXIV_DIR).
+    """
+    logger.info("Fetch the arxiv sources")
+    download_source(arxiv_ids, arxiv_dir) 
+
     logger.info(f"Find all the .tex files")
-    tex_paths = find_tex_files(str(ARXIV_DIR))
+    tex_paths = find_tex_files(arxiv_dir)
 
     logger.info("Convert tex to md files")
     tex_to_md(tex_paths)
 
-    logger.info("Load all md documents")
-    documents = load_md_files(ARXIV_DIR)
-    logger.info(f"We have {len(documents)} markdown documents")
+    logger.info("Find all md documents")
+    documents = load_md_files(arxiv_dir)
+    logger.info(f"We have {len(documents)} documents from {len(arxiv_ids)} arxiv_ids")
+
+    return documents 
+
+
+def load_urls(urls: List[str]=URLS):
+    """Fetch the urls and return langchain documents
+
+    Args:
+        urls (List[str], optional): List of urls. Defaults to URLS.
+    """
+    logger.info("Fetch the urls")
+    loader = WebBaseLoader(urls)
+    documents = loader.load()
+    logger.info(f"We have {len(documents)} documents from {len(urls)} urls")
+    return documents
+
+
+if __name__ == "__main__":
+    logger.info("Load arxiv articles into documents")
+    documents = load_arxiv_ids()
+    logger.info("Load the urls into documents")
+    document_url = load_urls()
